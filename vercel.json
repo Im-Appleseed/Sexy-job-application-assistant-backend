@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "/backend/api/gumroad.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/gumroad",
+      "dest": "/backend/api/gumroad.js"
+    }
+  ]
+}
