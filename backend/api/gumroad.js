@@ -70,8 +70,8 @@ module.exports = async (req, res) => {
     let expiresAt = null;
 
     //  Gumroad Product IDs
-    const GUMROAD_MONTHLY_ID = "pWQeIoOR-GINRP5mkaJc3g==";
-    const GUMROAD_LIFETIME_ID = "u12NYfwHiUhhFoqDDENLqg==";
+    const GUMROAD_MONTHLY_ID = "ShurG9dySdzHmVcy-pOEIg==";
+    const GUMROAD_LIFETIME_ID = "K5yc5hzns0PdeYgFKyoptQ==";
 
     if (productId === GUMROAD_LIFETIME_ID) {
       licenseType = 'lifetime';
@@ -80,7 +80,7 @@ module.exports = async (req, res) => {
       expiresAt = admin.firestore.Timestamp.fromDate(expiryDate);
     } else if (productId === GUMROAD_MONTHLY_ID) {
       licenseType = 'monthly';
-      const expiryDate = new Date();
+      const expiryDate = new Date();  
       expiryDate.setMonth(expiryDate.getMonth() + 1);
       expiresAt = admin.firestore.Timestamp.fromDate(expiryDate);
     } else {
@@ -115,7 +115,7 @@ module.exports = async (req, res) => {
     const userDocRef = db.collection('users').doc(userId);
     console.log(`[GUMROAD-LOG 8/9] Writing license data to Firestore at path: users/${userId}`);
     await userDocRef.set(licenseData, { merge: true });
-    // --- END FIX 2 ---
+    
 
     // 6. ALWAYS send a 200 OK to Gumroad to stop them from sending more pings.
     console.log('[GUMROAD-LOG 9/9] Firestore write operation was successful!');
@@ -127,3 +127,4 @@ module.exports = async (req, res) => {
     return res.status(200).json({ message: 'Error acknowledged.' });
   }
 };
+
