@@ -6,7 +6,7 @@ const axios = require('axios');
 try {
   if (!admin.apps.length) {
      console.log('[GUMROAD-LOG 1/9] Initializing Firebase Admin SDK...');
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+     const serviceAccount = JSON.parse(process.env.SEXY_JAA_FIREBASE_SERVICE_ACCOUNT_KEY);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount)
     });
@@ -127,4 +127,5 @@ module.exports = async (req, res) => {
     return res.status(200).json({ message: 'Error acknowledged.' });
   }
 };
+
 
