@@ -106,16 +106,27 @@ module.exports = async (req, res) => {
     const userId = userRecord.uid;
     console.log(`[GUMROAD-LOG 7.1/9] Found Auth UID: ${userId} for email: ${userEmail}`);
 
+    const userDocRef = db.collection('users').doc(userId);
+    
+    // --- THE FIX: Look up current database record before overwriting ---
+    console.log(`[GUMROAD-LOG 7.2/9] Checking current license status in database...`);
+    const currentDoc = await userDocRef.get();
+    const currentData = currentDoc.exists ? currentDoc.data() : {};
+
+    // SAFETY CHECK: Prevent downgrading a Lifetime license to a Monthly license
+    if (currentData.licenseType === 'lifetime' && licenseType === 'monthly') {
+        console.warn(`[GUMROAD-LOG SAFETY] User ${userEmail} tried to process a monthly purchase but already has Lifetime. Ignored downgrade.`);
+        return res.status(200).json({ message: 'User already has a superior Lifetime license. Downgrade prevented.' });
+    }
+
     const licenseData = {
       licenseType: licenseType,
       expiresAt: expiresAt,
       email: userEmail
     };
     
-    const userDocRef = db.collection('users').doc(userId);
     console.log(`[GUMROAD-LOG 8/9] Writing license data to Firestore at path: users/${userId}`);
-    await userDocRef.set(licenseData, { merge: true });
-    
+    await userDocRef.set(licenseData, { merge: true }); // { merge: true } ensures trialUsed: true is not deleted
 
     // 6. ALWAYS send a 200 OK to Gumroad to stop them from sending more pings.
     console.log('[GUMROAD-LOG 9/9] Firestore write operation was successful!');
@@ -127,5 +138,3 @@ module.exports = async (req, res) => {
     return res.status(200).json({ message: 'Error acknowledged.' });
   }
 };
-
-
